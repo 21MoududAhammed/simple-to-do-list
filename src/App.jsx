@@ -1,15 +1,24 @@
-import { useReducer } from "react";
+import { useImmerReducer } from "use-immer";
 import AddTask from "./components/AddTask";
 import TaskList from "./components/TaskList";
 import { initialTasks } from "./data/data";
 import taskReducer from "./reducerFuncs/taskReducer";
 
+
 export default function App() {
-  const [tasks, dispatch] = useReducer(taskReducer, initialTasks);
+  const [tasks, dispatch] = useImmerReducer(taskReducer, initialTasks);
 
   const generateNextId = (tasks) => {
-    const sortedTasks = tasks.sort((a, b) => b.id - a.id);
-    return sortedTasks[0].id + 1;
+    let nextId;
+    if (tasks.length > 0) {
+      const maxId = tasks.reduce((max, current) =>
+        max.id > current.id ? max.id : current.id
+      );
+      nextId = maxId + 1;
+    } else {
+      nextId = 1;
+    }
+    return nextId;
   };
   // to add a task to existing list
   const handleAddTask = (text) => {
